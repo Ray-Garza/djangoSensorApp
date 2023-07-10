@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Gráfica en tiempo real</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  </head>
+  <body>
+    <div>
+        <label for="y-value">Valor de Y:</label>
+        <input type="text" id="y-value" />
+        <button onclick="agregarPunto()">Agregar Punto</button>
+    </div>
+    <div id="graph-container" style="width:100%;height:600px;"></div>
+
+    <script>
+      // Arreglos para almacenar los datos de X e Y
+        var xData = [];
+        var yData = [];
+
+        // Función para agregar un punto a los datos y actualizar la gráfica
+        function agregarPunto() {
+            var yValue = parseFloat(document.getElementById("y-value").value);
+            var suma = 0;
+            var media = 0;
+            var xRango=0;
+            var ydB = [];
+
+            if (!isNaN(yValue)) {
+            // Agregar el nuevo punto a los arreglos de datos                
+                yData.push(yValue);
+                if(yData.length<5){
+                    xRango=5;
+                }else{
+                    xRango=yData.length;
+                }
+                
+                for(i=0;i<yData.length;i++){
+                    suma += yData[i];
+                }
+                media = suma/yData.length;
+
+                for(i=0;i<=yData.length;i++){
+                    ydB[i] = media;
+                }
+                // Actualizar la gráfica
+                Plotly.newPlot(
+                    //ID del div (graph)
+                    "graph-container",
+                    //Datos a graficar (data)
+                    [
+                    {                        
+                        y: yData,
+                        type: "scatter",
+                        name: "Data",
+                        line: {
+                            color: 'green'
+                        }
+                    },
+                    {                        
+                        y: ydB,
+                        type: "scatter",
+                        name: "Decibel Level",
+                        opacity: 0.9, // Poca opacidad (30%)
+                        line: {
+                            dash: 'dot', // Línea punteada
+                            color: 'violet'
+                        },
+                        hoverinfo: 'none' // Desactivar la selección de puntos
+
+                    }
+
+                    ],
+                    //Personalización (layout)
+                    {
+                        title: "Gráfica en tiempo real",
+                        xaxis: {
+                            title: "Index",
+                            tickformat: 'd', //Mostrar solo valores enteros
+                            
+                            range: [xRango-5,xRango],
+                        },
+                        yaxis: {
+                            title: "Output",
+                            range: [0,6]
+                        },
+                        dragmode: 'pan',
+                    },
+                    //Configuración (config)
+                    {
+                        responsive: true,                                        
+                    }
+                );
+                
+            }
+
+        }
+
+
+
+    </script>
+  </body>
+</html>
